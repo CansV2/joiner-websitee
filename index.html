@@ -4,9 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Economic Review Station</title>
+<!-- Load Baloo 2 font from Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet" />
 <style>
   body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Baloo 2', cursive, sans-serif;
     background: #f5f0e6;
     color: #5a3e1b;
     margin: 0; padding: 20px;
@@ -467,7 +469,6 @@
 
   // Render definitions
   function renderDefinitions(){
-    // clear previous except header
     const existingItems = definitionsPanel.querySelectorAll('.definition-item');
     existingItems.forEach(item => item.remove());
 
@@ -478,15 +479,13 @@
       defEl.textContent = `${word}: ${definition}`;
       definitionsPanel.appendChild(defEl);
 
-      // click to highlight word bank and itself
-      defEl.addEventListener('click', () => {
+      defEl.addEventListener('click', ()=>{
         highlightWordInBank(word);
         highlightDefinition(word);
       });
     });
   }
 
-  // Highlight word in word bank on click or definition click
   function highlightWordInBank(word){
     const allWords = wordBankElement.querySelectorAll('.word');
     allWords.forEach(w => w.classList.remove('highlighted'));
@@ -494,7 +493,6 @@
     if(target) target.classList.add('highlighted');
   }
 
-  // Highlight definition in definitions panel
   function highlightDefinition(word){
     const allDefs = definitionsPanel.querySelectorAll('.definition-item');
     allDefs.forEach(d => d.classList.remove('highlighted'));
@@ -502,13 +500,11 @@
     if(target) target.classList.add('highlighted');
   }
 
-  // Clear all highlights
   function clearHighlights(){
     wordBankElement.querySelectorAll('.word').forEach(w => w.classList.remove('highlighted'));
     definitionsPanel.querySelectorAll('.definition-item').forEach(d => d.classList.remove('highlighted'));
   }
 
-  // Handle letter click (toggle select)
   gridElement.addEventListener('click', e => {
     if(!gameActive) return;
     if(!e.target.classList.contains('letter')) return;
@@ -520,18 +516,14 @@
       cell.classList.remove('selected');
       selectedCells = selectedCells.filter(c => c !== cell);
     } else {
-      // Add letter and jump animation
       cell.classList.add('selected');
       cell.style.transform = 'translateY(-8px)';
-      setTimeout(() => {
-        cell.style.transform = '';
-      }, 200);
+      setTimeout(() => { cell.style.transform = ''; }, 200);
       selectedCells.push(cell);
     }
     updateSelectedWord();
   });
 
-  // Keep track of the currently selected word string
   let currentSelectedWord = '';
 
   function updateSelectedWord(){
@@ -539,38 +531,33 @@
     submitBtn.disabled = currentSelectedWord.length === 0;
   }
 
-  submitBtn.addEventListener('click', () => {
+  submitBtn.addEventListener('click', ()=>{
     if(!gameActive) return;
 
     const wordAttempt = currentSelectedWord.toUpperCase();
 
     if(words.some(({word}) => word === wordAttempt && !foundWords.has(word))){
-      // Found a word!
       foundWords.add(wordAttempt);
       score += 10;
       scoreElement.textContent = score;
 
-      // Mark letters as found
       selectedCells.forEach(cell => {
         cell.classList.add('found');
         cell.classList.remove('selected');
       });
 
-      // Cross out in word bank
       const wEl = wordBankElement.querySelector(`.word[data-word="${wordAttempt}"]`);
       if(wEl){
         wEl.classList.add('found');
         wEl.classList.remove('highlighted');
       }
 
-      // Show definition and highlight
       highlightDefinition(wordAttempt);
       highlightWordInBank(wordAttempt);
 
       feedbackElement.textContent = `"${wordAttempt}" found!`;
       feedbackElement.style.color = '#285000';
 
-      // Clear selection
       selectedCells = [];
       currentSelectedWord = '';
       submitBtn.disabled = true;
@@ -578,7 +565,6 @@
       checkWin();
 
     } else {
-      // Incorrect word
       feedbackElement.textContent = "Try Again";
       feedbackElement.style.color = '#b00000';
       shakeSelectedCells();
@@ -608,8 +594,7 @@
     submitBtn.disabled = true;
   }
 
-  // Word bank click highlights definition
-  wordBankElement.addEventListener('click', e => {
+  wordBankElement.addEventListener('click', e=>{
     if(e.target.classList.contains('word')){
       const word = e.target.dataset.word;
       highlightDefinition(word);
@@ -617,9 +602,8 @@
     }
   });
 
-  // Timer
   function startTimer(){
-    timeLeft = 300; // 5 minutes
+    timeLeft = 300;
     timerElement.textContent = "5:00";
 
     timer = setInterval(() => {
@@ -635,7 +619,6 @@
     }, 1000);
   }
 
-  // Check if all words found
   function checkWin(){
     if(foundWords.size === words.length){
       clearInterval(timer);
@@ -643,13 +626,11 @@
     }
   }
 
-  // Show win screen
   function endGame(won){
     gameActive = false;
     submitBtn.disabled = true;
     startBtn.disabled = false;
 
-    // Highlight not found words in word bank
     words.forEach(({word})=>{
       if(!foundWords.has(word)){
         const wEl = wordBankElement.querySelector(`.word[data-word="${word}"]`);
@@ -670,8 +651,7 @@
     winScreen.classList.add('show');
   }
 
-  // Start game button
-  startBtn.addEventListener('click', () => {
+  startBtn.addEventListener('click', ()=>{
     resetGame();
     gameActive = true;
     startBtn.disabled = true;
@@ -680,8 +660,7 @@
     startTimer();
   });
 
-  // Restart from win screen
-  winRestart.addEventListener('click', () => {
+  winRestart.addEventListener('click', ()=>{
     winScreen.classList.remove('show');
     resetGame();
     startBtn.disabled = false;
@@ -707,7 +686,6 @@
     clearSelection();
   }
 
-  // Initial setup
   createEmptyGrid();
   placeWords();
   fillEmptySpaces();
